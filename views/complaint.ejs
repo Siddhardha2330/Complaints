@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Add Complaint</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .container {
+      width: 400px;
+      padding: 20px;
+      background-color: white;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      border-radius: 10px;
+    }
+    textarea {
+      width: 90%;
+      padding: 10px;
+      margin: 10px 0;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      height: 200px;
+    }
+    button {
+      width: 100%;
+      padding: 12px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+    a {
+      display: block;
+      text-align: center;
+      margin-top: 10px;
+      color: #4CAF50;
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Add Complaint</h2>
+    <form action="/add-complaint" method="POST">
+      <input type="hidden" name="username" value="<%= userInfo.username %>">
+      <input type="hidden" name="email" value="<%= userInfo.email %>">
+      <input type="hidden" name="branch" value="<%= userInfo.branch %>">
+      <input type="hidden" name="regno" value="<%= userInfo.regno %>">
+      <textarea name="complaint" placeholder="Write your complaint here..." required></textarea>
+      <button type="submit">Submit Complaint</button>
+    </form>
+    <a href="/dashboard">Go Back to Dashboard</a>
+  </div>
+</body>
+</html>

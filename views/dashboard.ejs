@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+    header {
+      background-color: #000;
+      color: #fff;
+      padding: 10px;
+      text-align: center;
+      position: fixed;
+      top: 0;
+      width: 100%;
+      z-index: 1;
+    }
+    header h1 {
+      margin: 0;
+    }
+    main {
+      padding: 60px 20px;
+    }
+    .filter-container {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .filter-container select {
+      padding: 10px;
+      border-radius: 5px;
+    }
+    .complaints-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      justify-content: center;
+    }
+    .complaint-box {
+      width: 250px;
+      background-color: #f9f9f9;
+      padding: 15px;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      position: relative;
+      transition: transform 0.3s ease;
+    }
+    .complaint-box:hover {
+      transform: scale(1.05);
+    }
+    .like-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 10px;
+    }
+    .like-button {
+      background: none;
+      border: none;
+      cursor: pointer;
+    }
+    .like-button img {
+      width: 10px;
+    }
+    .like-button.liked {
+      background-color: red;
+      border-radius: 100%;
+      filter: none;
+    }
+    .button {
+      background-color: #4CAF50;
+      color: white;
+      padding: 10px 20px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 16px;
+      margin: 4px 2px;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+    .logout-button {
+      position: absolute;
+      right:3px;
+      background-color: #f44336;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Complaints</h1>
+  </header>
+
+  <main>
+    <div class="filter-container">
+      <form action="/dashboard" method="get">
+        <label for="branch">Filter by Branch:</label>
+        <select name="branch" id="branch" onchange="this.form.submit()">
+          <option value="">All</option>
+          <option value="cse" <% if (branch === 'cse') { %> selected <% } %>>CSE</option>
+          <option value="it" <% if (branch === 'it') { %> selected <% } %>>IT</option>
+          <option value="aids" <% if (branch === 'aids') { %> selected <% } %>>AIDS</option>
+          <option value="aiml" <% if (branch === 'aiml') { %> selected <% } %>>AIML</option>
+          <option value="ece" <% if (branch === 'ece') { %> selected <% } %>>ECE</option>
+          <option value="eee" <% if (branch === 'eee') { %> selected <% } %>>EEE</option>
+          <option value="mech" <% if (branch === 'mech') { %> selected <% } %>>MECH</option>
+        </select>
+        <a href="/logout" class="button logout-button">Logout</a>
+      </form>
+
+      <a href="/add-complaint" class="button">Add Complaint</a>
+    </div>
+
+    <div class="complaints-container">
+      <% complaints.forEach(complaint => { %>
+        <div class="complaint-box">
+          <div class="complaint-content" onclick="location.href='/complaint/<%= complaint._id %>'">
+            <p><strong>User:</strong> <%= complaint.username %></p>
+            <p><%= complaint.complaint.substring(0, 100) %>...</p>
+          </div>
+
+          <div class="like-container">
+            <form action="/complaint/<%= complaint._id %>/like" method="POST">
+              <button
+                type="button"
+                class="like-button <%= likedComplaints.includes(complaint._id.toString()) ? 'liked' : '' %>"
+                data-complaint-id="<%= complaint._id %>"
+                <% if (likedComplaints.includes(complaint._id.toString())) { %> disabled <% } %>>
+                <img src="https://cdn-icons-png.flaticon.com/512/2107/2107952.png" alt="like">
+              </button>
+              <span><%= complaint.likes %></span>
+            </form>
+          </div>
+        </div>
+      <% }) %>
+    </div>
+
+
+  </main>
+
+  <script>
+    document.querySelectorAll('.like-button').forEach(button => {
+      button.addEventListener('click', async function(event) {
+        event.preventDefault();  
+        const complaintId = this.dataset.complaintId;
+        const likeCountElem = this.nextElementSibling;
+        try {
+          const response = await fetch(`/complaint/${complaintId}/like`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' }
+          });
+          if (response.ok) {
+            const data = await response.json();
+            likeCountElem.textContent = data.likes;
+            this.disabled = true;
+            this.classList.add('liked'); // Add liked class
+          } else {
+            console.log("You already liked it");
+          }
+        } catch (error) {
+          console.error('Error liking the complaint:', error);
+        }
+      });
+    });
+  </script>
+</body>
+</html>
